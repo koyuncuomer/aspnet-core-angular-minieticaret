@@ -14,7 +14,6 @@ namespace Persistence.Repositories
     public class ReadRepository<T> : IReadRepository<T> where T : BaseEntity
     {
         private readonly ETicaretAPIDbContext _context;
-
         public ReadRepository(ETicaretAPIDbContext context)
         {
             _context = context;
@@ -22,19 +21,31 @@ namespace Persistence.Repositories
 
         public DbSet<T> Table => _context.Set<T>();
 
-        public IQueryable<T> GetAll() => Table;
+        private IQueryable<T> ApplyTracking(IQueryable<T> query, bool tracking)
+        {
+            return tracking ? query : query.AsNoTracking();
+        }
 
-        public IQueryable<T> GetWhere(Expression<Func<T, bool>> method) => 
-            Table.Where(method);
+        public IQueryable<T> GetAll(bool tracking = true)
+        {
+            return ApplyTracking(Table.AsQueryable(), tracking);
+        }
 
-        public async Task<T> GetSingleAsync(Expression<Func<T, bool>> method) => 
-            await Table.FirstOrDefaultAsync(method);
+        public IQueryable<T> GetWhere(Expression<Func<T, bool>> method, bool tracking = true)
+        {
+            return ApplyTracking(Table.Where(method), tracking);
+        }
 
-        public async Task<T> GetByIdAsync(string id) =>
-            await Table.FindAsync(Guid.Parse(id)); //Table.FirstOrDefaultAsync(x => x.Id == Guid.Parse(id));
+        public async Task<T> GetSingleAsync(Expression<Func<T, bool>> method, bool tracking = true)
+        {
+            return await ApplyTracking(Table.AsQueryable(), tracking).FirstOrDefaultAsync(method);
+        }
 
-
-
-
+        public async Task<T> GetByIdAsync(string id, bool tracking = true)
+        {
+            if (!Guid.TryParse(id, out var guidId))
+                throw new ArgumentException("Invalid ID format", nameof(id));
+            return await ApplyTracking(Table.AsQueryable(), tracking).FirstOrDefaultAsync(data => data.Id == guidId);
+        }
     }
 }
