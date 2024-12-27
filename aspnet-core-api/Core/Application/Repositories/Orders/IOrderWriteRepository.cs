@@ -5,10 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Domain.Entities;
 
-namespace Application.Abstractions
+namespace Application.Repositories.Orders
 {
-    public interface IProductService
+    public interface IOrderWriteRepository : IWriteRepository<Order>
     {
-        List<Product> GetProducts();
     }
 }
