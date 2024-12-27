@@ -21,14 +21,13 @@ namespace API.Controllers
         {
             //await _productWriteRepository.AddRangeAsync(new()
             //{
-            //    new() { Id = Guid.NewGuid(), Name = "Product 1", Price = 100, CreatedDate = DateTime.UtcNow, Stock = 10 },
-            //    new() { Id = Guid.NewGuid(), Name = "Product 2", Price = 200, CreatedDate = DateTime.UtcNow, Stock = 20 },
-            //    new() { Id = Guid.NewGuid(), Name = "Product 3", Price = 300, CreatedDate = DateTime.UtcNow, Stock = 30 },
+            //    new() { Name = "Product 11", Price = 100, Stock = 10 },
+            //    new() { Name = "Product 22", Price = 200, Stock = 20 }
             //});
             //await _productWriteRepository.SaveAsync();
 
-            var p = await _productReadRepository.GetByIdAsync("781f38f5-7cd6-4b72-9e66-1bebcbdef01b", false);
-            p.Name = "Product 1 Updated";
+            var p = await _productReadRepository.GetByIdAsync("c188131a-772c-4204-ac5d-c9c1575c3a26", false);
+            p.Name = "Product 22 Updated";
             await _productWriteRepository.SaveAsync();
         }
 
