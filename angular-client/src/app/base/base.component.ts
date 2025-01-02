@@ -6,10 +6,10 @@ export class BaseComponent {
   showSpinner(name: SpinnerName) {
     this.spinner.show(name);
 
-    // Şimdilik 3sn sonra spinner kapanması için ilerde api istekleri bittiğinde kapanacak
+    // Şimdilik 1sn sonra spinner kapanması için ilerde api istekleri bittiğinde kapanacak
     setTimeout(() => {
       this.hideSpinner(name);
-    }, 3000);
+    }, 1000);
   }
 
   hideSpinner(name: SpinnerName) {
