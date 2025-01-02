@@ -1,4 +1,5 @@
 ﻿using Application.Repositories.Products;
+using Application.ViewModels.Products;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -16,34 +17,56 @@ namespace API.Controllers
             _productWriteRepository = productWriteRepository;
         }
 
-        //[HttpGet]
-        //public async Task Get()
-        //{
-        //    //await _productWriteRepository.AddRangeAsync(new()
-        //    //{
-        //    //    new() { Name = "Product 11", Price = 100, Stock = 10 },
-        //    //    new() { Name = "Product 22", Price = 200, Stock = 20 }
-        //    //});
-        //    //await _productWriteRepository.SaveAsync();
-
-        //    var p = await _productReadRepository.GetByIdAsync("c188131a-772c-4204-ac5d-c9c1575c3a26", false);
-        //    p.Name = "Product 22 Updated";
-        //    await _productWriteRepository.SaveAsync();
-        //}
-
-        //[HttpGet("{id}")]
-        //public async Task<IActionResult> Get(string id)
-        //{
-        //    var product = await _productReadRepository.GetByIdAsync(id);
-        //    if (product == null)
-        //        return NotFound();
-        //    return Ok(product);
-        //}
-
         [HttpGet]
         public IActionResult Get()
         {
-            return Ok("Merhaba");
+            return Ok(_productReadRepository.GetAll(false));
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> Get([FromRoute(Name = "id")] string id)
+        {
+            var product = await _productReadRepository.GetByIdAsync(id, false);
+            if (product == null)
+                return NotFound();
+            return Ok(product);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Post([FromBody] VM_Create_Product vm)
+        {
+            await _productWriteRepository.AddAsync(new()
+            {
+                Name = vm.Name,
+                Price = vm.Price,
+                Stock = vm.Stock
+            });
+            await _productWriteRepository.SaveAsync();
+            return StatusCode(201);
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> Put([FromBody] VM_Update_Product vm)
+        {
+            var product = await _productReadRepository.GetByIdAsync(vm.Id);
+            if (product == null)
+                return NotFound();
+            product.Name = vm.Name;
+            product.Price = vm.Price;
+            product.Stock = vm.Stock;
+            await _productWriteRepository.SaveAsync();
+            return Ok();
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete([FromRoute(Name = "id")] string id)
+        {
+            var product = await _productReadRepository.GetByIdAsync(id);
+            if (product == null)
+                return NotFound();
+            await _productWriteRepository.RemoveAsync(id);
+            await _productWriteRepository.SaveAsync();
+            return Ok();
         }
     }
 }
