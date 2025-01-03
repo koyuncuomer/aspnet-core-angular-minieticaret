@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClientService } from '../http-client.service';
 import { Create_Product } from '../../../contracts/create_product';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
@@ -8,10 +9,32 @@ import { Create_Product } from '../../../contracts/create_product';
 export class ProductService {
   constructor(private httpClientService: HttpClientService) { }
 
-  create(product: Create_Product, successCallBack?: any) {
-    this.httpClientService.post({ controller: "products" }, product).subscribe(result => {
-      successCallBack()
-      console.log(result);
+  create(product: Create_Product, successCallBack?: () => void, errorCallBack?: (errorMessage: string) => void
+  ) {
+    this.httpClientService.post({ controller: "products" }, product).subscribe({
+      next: (result) => {
+        console.log("product.service post result, ", result);
+        if (successCallBack)
+          successCallBack();
+      },
+      error: (errorResponse: HttpErrorResponse) => {
+        console.log(errorResponse);
+        const _error: Array<{ key: string; value: Array<string> }> = errorResponse.error;
+
+        let msg = "";
+        _error.forEach((error) => {
+          error.value.forEach((value) => {
+            msg += `${value}<br>`;
+          });
+        });
+
+        if (errorCallBack)
+          errorCallBack(msg);
+      },
+      complete: () => {
+        console.log("İstek tamamlandı.");
+      }
     });
   }
+
 }

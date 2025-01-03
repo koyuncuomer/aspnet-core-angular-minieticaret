@@ -33,6 +33,13 @@ export class CreateComponent extends BaseComponent {
         type: MessageType.Success,
         position: MessagePosition.TopRight
       });
+    }, (errorMessage: string) => {
+      this.alertify.message(errorMessage, {
+        dismissOthers: true,
+        type: MessageType.Error,
+        position: MessagePosition.TopRight,
+        delay: 10
+      });
     });
   }
 }
