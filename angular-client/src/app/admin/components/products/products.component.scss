@@ -1,0 +1,17 @@
+.products-container {
+  margin: 5px;
+  display: grid;
+  /* Grid düzeni */
+  grid-template-columns: 40% 60%;
+  /* Sol: %40, Sağ: %60 */
+  gap: 20px;
+  /* Bileşenler arasında boşluk */
+}
+
+.products-form {
+  /* Sol bölge */
+}
+
+.products-list {
+  /* Sağ bölge */
+}
