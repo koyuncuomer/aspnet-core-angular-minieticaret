@@ -1,4 +1,5 @@
 ﻿using Application.Repositories.Products;
+using Application.RequestParameters;
 using Application.ViewModels.Products;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,9 +19,20 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        public IActionResult Get()
+        public IActionResult Get([FromQuery] Pagination pagination)
         {
-            return Ok(_productReadRepository.GetAll(false));
+            var totalCount = _productReadRepository.GetAll(false).Count();
+            var products = _productReadRepository.GetAll(false).Select(p => new
+            {
+                p.Id,
+                p.Name,
+                p.Price,
+                p.Stock,
+                p.CreatedDate,
+                p.UpdatedDate
+            }).Skip((pagination.Page - 1) * pagination.Size).Take(pagination.Size);
+
+            return Ok(new { totalCount, products });
         }
 
         [HttpGet("{id}")]

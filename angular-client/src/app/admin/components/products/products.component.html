@@ -1,7 +1,7 @@
 <div class="products-container">
 
   <div class="products-form">
-    <app-create></app-create>
+    <app-create (createdProduct)="createdProduct($event)"></app-create>
   </div>
 
   <div class="products-list">

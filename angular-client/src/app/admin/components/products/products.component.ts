@@ -1,6 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { BaseComponent, SpinnerName } from '../../../base/base.component';
 import { NgxSpinnerService } from 'ngx-spinner';
+import { Create_Product } from '../../../contracts/create_product';
+import { ListComponent } from './list/list.component';
 
 @Component({
   selector: 'app-products',
@@ -16,5 +18,12 @@ export class ProductsComponent extends BaseComponent {
 
   ngOnInit(): void {
     this.showSpinner(SpinnerName.SquareJellyBox);
+  }
+
+  @ViewChild(ListComponent) listComponent: ListComponent;
+
+  createdProduct(createdProduct: Create_Product) {
+    console.log("products.component.ts içerisinden get products", createdProduct);
+    this.listComponent.getProducts();
   }
 }
