@@ -9,6 +9,7 @@ import { ListComponent } from './list/list.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
+import { FileUploadModule } from '../../../services/common/file-upload/file-upload.module';
 
 
 
@@ -27,7 +28,8 @@ import { MatPaginatorModule } from '@angular/material/paginator';
     MatInputModule,
     MatButtonModule,
     MatTableModule,
-    MatPaginatorModule
+    MatPaginatorModule,
+    FileUploadModule
   ]
 })
 export class ProductsModule { }
