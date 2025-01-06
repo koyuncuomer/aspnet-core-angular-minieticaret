@@ -4,6 +4,8 @@ import { HttpClientService } from '../http-client.service';
 import { HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { AlertifyService, MessagePosition, MessageType } from '../../admin/alertify.service';
 import { CustomToastrService, ToastrMessageType, ToastrPosition } from '../../ui/custom-toastr.service';
+import { FileUploadDialogComponent, FileUploadDialogState } from '../../../dialogs/file-upload-dialog/file-upload-dialog.component';
+import { DialogService } from '../dialog.service';
 
 @Component({
   selector: 'app-file-upload',
@@ -14,7 +16,8 @@ import { CustomToastrService, ToastrMessageType, ToastrPosition } from '../../ui
 })
 export class FileUploadComponent {
 
-  constructor(private httpClientService: HttpClientService, private alertfyService: AlertifyService, private customToastrService: CustomToastrService) { }
+  constructor(private httpClientService: HttpClientService, private alertfyService: AlertifyService, private customToastrService: CustomToastrService, private dialogService: DialogService) { }
+
   public files: NgxFileDropEntry[];
 
   @Input() options: Partial<FileUploadOptions>;
@@ -29,43 +32,51 @@ export class FileUploadComponent {
       })
     }
 
-    this.httpClientService.post({
-      controller: this.options.controller,
-      action: this.options.action,
-      queryString: this.options.queryString,
-      headers: new HttpHeaders({ 'responseType': 'blob' })
-    }, fileData).subscribe({
-      next: (result) => {
-        console.log("file.upload.components post result, ", result);
-        const msg: string = "Files uploaded successfully";
-        if (this.options.isAdminPage) {
-          this.alertfyService.message(msg, { dismissOthers: true, type: MessageType.Success, position: MessagePosition.TopRight });
-        } else {
-          this.customToastrService.message(msg, "Success", { type: ToastrMessageType.Success, position: ToastrPosition.TopRight });
-        }
-      },
-      error: (errorResponse: HttpErrorResponse) => {
-        console.log(errorResponse);
-        const _error: Array<{ key: string; value: Array<string> }> = errorResponse.error;
+    this.dialogService.openDialog({
+      componentType: FileUploadDialogComponent,
+      data: FileUploadDialogState.Yes,
+      afterClosed: () => {
 
-        let msg = "";
-        _error.forEach((error) => {
-          error.value.forEach((value) => {
-            msg += `${value}<br>`;
-          });
+        this.httpClientService.post({
+          controller: this.options.controller,
+          action: this.options.action,
+          queryString: this.options.queryString,
+          headers: new HttpHeaders({ 'responseType': 'blob' })
+        }, fileData).subscribe({
+          next: (result) => {
+            console.log("file.upload.components post result, ", result);
+            const msg: string = "Files uploaded successfully";
+            if (this.options.isAdminPage) {
+              this.alertfyService.message(msg, { dismissOthers: true, type: MessageType.Success, position: MessagePosition.TopRight });
+            } else {
+              this.customToastrService.message(msg, "Success", { type: ToastrMessageType.Success, position: ToastrPosition.TopRight });
+            }
+          },
+          error: (errorResponse: HttpErrorResponse) => {
+            console.log(errorResponse);
+            const _error: Array<{ key: string; value: Array<string> }> = errorResponse.error;
+
+            let msg = "";
+            _error.forEach((error) => {
+              error.value.forEach((value) => {
+                msg += `${value}<br>`;
+              });
+            });
+
+            if (this.options.isAdminPage) {
+              this.alertfyService.message(msg, { dismissOthers: true, type: MessageType.Error, position: MessagePosition.TopRight });
+            } else {
+              this.customToastrService.message(msg, "Error", { type: ToastrMessageType.Error, position: ToastrPosition.TopRight });
+            }
+
+          },
+          complete: () => {
+            console.log("İstek tamamlandı.");
+          }
         });
-
-        if (this.options.isAdminPage) {
-          this.alertfyService.message(msg, { dismissOthers: true, type: MessageType.Error, position: MessagePosition.TopRight });
-        } else {
-          this.customToastrService.message(msg, "Error", { type: ToastrMessageType.Error, position: ToastrPosition.TopRight });
-        }
-
-      },
-      complete: () => {
-        console.log("İstek tamamlandı.");
       }
-    });
+    })
+
 
   }
 
