@@ -23,11 +23,15 @@ export class ProductService {
         const _error: Array<{ key: string; value: Array<string> }> = errorResponse.error;
 
         let msg = "";
-        _error.forEach((error) => {
-          error.value.forEach((value) => {
-            msg += `${value}<br>`;
+        if (Array.isArray(_error)) {
+          _error.forEach((error) => {
+            error.value.forEach((value) => {
+              msg += `${value}<br>`;
+            });
           });
-        });
+        }
+        else
+          msg = "An error occurred while creating product";
 
         if (errorCallBack)
           errorCallBack(msg);
@@ -40,7 +44,7 @@ export class ProductService {
 
   async read(page: number = 1, size: number = 5, successCallBack?: () => void, errorCallBack?: (errorMessage: string) => void): Promise<{ totalCount: number; products: List_Product[] }> {
     try {
-      const promiseData = await lastValueFrom (
+      const promiseData = await lastValueFrom(
         this.httpClientService.get<{ totalCount: number; products: List_Product[] }>({
           controller: 'products',
           queryString: `page=${page}&size=${size}`

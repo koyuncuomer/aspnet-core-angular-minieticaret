@@ -362,5 +362,5 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 
-/aspnet-core-api/Presentation/API/wwwroot/resource/product-images
+/aspnet-core-api/Presentation/API/wwwroot/resource
 temp.txt

@@ -6,6 +6,8 @@ import { AlertifyService, MessagePosition, MessageType } from '../../admin/alert
 import { CustomToastrService, ToastrMessageType, ToastrPosition } from '../../ui/custom-toastr.service';
 import { FileUploadDialogComponent, FileUploadDialogState } from '../../../dialogs/file-upload-dialog/file-upload-dialog.component';
 import { DialogService } from '../dialog.service';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { SpinnerName } from '../../../base/base.component';
 
 @Component({
   selector: 'app-file-upload',
@@ -16,7 +18,12 @@ import { DialogService } from '../dialog.service';
 })
 export class FileUploadComponent {
 
-  constructor(private httpClientService: HttpClientService, private alertfyService: AlertifyService, private customToastrService: CustomToastrService, private dialogService: DialogService) { }
+  constructor(
+    private httpClientService: HttpClientService,
+    private alertfyService: AlertifyService,
+    private customToastrService: CustomToastrService,
+    private dialogService: DialogService,
+    private spinner: NgxSpinnerService) { }
 
   public files: NgxFileDropEntry[];
 
@@ -36,7 +43,7 @@ export class FileUploadComponent {
       componentType: FileUploadDialogComponent,
       data: FileUploadDialogState.Yes,
       afterClosed: () => {
-
+        this.spinner.show(SpinnerName.BallAtom)
         this.httpClientService.post({
           controller: this.options.controller,
           action: this.options.action,
@@ -45,23 +52,32 @@ export class FileUploadComponent {
         }, fileData).subscribe({
           next: (result) => {
             console.log("file.upload.components post result, ", result);
+            this.spinner.hide(SpinnerName.BallAtom);
+
             const msg: string = "Files uploaded successfully";
             if (this.options.isAdminPage) {
               this.alertfyService.message(msg, { dismissOthers: true, type: MessageType.Success, position: MessagePosition.TopRight });
             } else {
               this.customToastrService.message(msg, "Success", { type: ToastrMessageType.Success, position: ToastrPosition.TopRight });
             }
+
           },
           error: (errorResponse: HttpErrorResponse) => {
             console.log(errorResponse);
             const _error: Array<{ key: string; value: Array<string> }> = errorResponse.error;
 
             let msg = "";
-            _error.forEach((error) => {
-              error.value.forEach((value) => {
-                msg += `${value}<br>`;
+            if (Array.isArray(_error)) {
+              _error.forEach((error) => {
+                error.value.forEach((value) => {
+                  msg += `${value}<br>`;
+                });
               });
-            });
+            }
+            else
+              msg = "An error occurred while uploading files";
+
+            this.spinner.hide(SpinnerName.BallAtom);
 
             if (this.options.isAdminPage) {
               this.alertfyService.message(msg, { dismissOthers: true, type: MessageType.Error, position: MessagePosition.TopRight });
