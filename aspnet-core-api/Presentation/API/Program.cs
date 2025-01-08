@@ -3,6 +3,7 @@ using FluentValidation;
 using FluentValidation.AspNetCore;
 using Infrastructure;
 using Infrastructure.Filters;
+using Infrastructure.Services.Storage.Local;
 using Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,6 +11,10 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddPersistenceServices();
 builder.Services.AddInfrastructureServices();
+
+//builder.Services.AddStorage(StorageType.Azure); // Alt satýrýn farklý bir kullanýmý
+builder.Services.AddStorage<LocalStorage>();
+
 builder.Services.AddCors(options => options.AddDefaultPolicy(policy => policy.WithOrigins("http://localhost:4200", "https://localhost:4200").AllowAnyHeader().AllowAnyMethod()
 ));
 
