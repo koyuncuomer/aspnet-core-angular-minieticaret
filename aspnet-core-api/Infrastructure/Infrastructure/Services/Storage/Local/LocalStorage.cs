@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace Infrastructure.Services.Storage.Local
 {
-    public class LocalStorage : ILocalStorage
+    public class LocalStorage : Storage, ILocalStorage
     {
         readonly private IWebHostEnvironment _webHostEnvironment;
 
@@ -42,8 +42,7 @@ namespace Infrastructure.Services.Storage.Local
 
             foreach (IFormFile file in files)
             {
-                //string fileNewName = FileRename(uploadPath, file.FileName); // kaldırıldı local ya da azure için bu metod değişecek
-                string fileNewName = file.FileName;
+                string fileNewName = FileRename(uploadPath, file.FileName, HasFile);
 
                 await CopyFileAsync(Path.Combine(uploadPath, fileNewName), file);
                 datas.Add((fileNewName, Path.Combine(path, fileNewName)));

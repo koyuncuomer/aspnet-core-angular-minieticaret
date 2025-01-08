@@ -1,23 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
 using Infrastructure.Operations;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 
-namespace Infrastructure.Services
+namespace Infrastructure.Services.Storage
 {
-    public class FileService
+    public class Storage
     {
-
-
- 
-
-        string FileRename(string path, string fileName)
+        protected delegate bool HasFile(string pathOrContainerName, string fileName);
+        protected string FileRename(string pathOrContainerName, string fileName, HasFile hasFileMethod)
         {
             string extension = Path.GetExtension(fileName);
             string regulatedNameWithoutExtension = NameOperation.CharacterRegulatory(Path.GetFileNameWithoutExtension(fileName));
@@ -26,7 +19,8 @@ namespace Infrastructure.Services
             int counter = 1;
             string newFileName = regulatedNameWithExtension;
 
-            while (File.Exists(Path.Combine(path, newFileName)))
+            //while (File.Exists(Path.Combine(path, newFileName)))
+            while (hasFileMethod(pathOrContainerName, newFileName))
             {
                 newFileName = $"{regulatedNameWithoutExtension}-{counter}{extension}";
                 counter++;
@@ -34,7 +28,6 @@ namespace Infrastructure.Services
 
             return newFileName;
         }
-
 
     }
 }
