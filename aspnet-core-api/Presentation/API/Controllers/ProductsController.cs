@@ -8,6 +8,7 @@ using Application.RequestParameters;
 using Application.ViewModels.Products;
 using Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers
 {
@@ -114,32 +115,48 @@ namespace API.Controllers
         }
 
         [HttpPost("[action]")]
-        public async Task<IActionResult> Upload()
+        public async Task<IActionResult> Upload([FromQuery] string id, [FromForm] IFormFileCollection files)
         {
-            var datas = await _storageService.UploadAsync("resource/product-images", Request.Form.Files);
+            var datas = await _storageService.UploadAsync("resource/product-images", files);
+
+            var product = await _productReadRepository.GetByIdAsync(id);
+
             await _productImageFileWriteRepository.AddRangeAsync(datas.Select(d => new ProductImageFile()
             {
                 FileName = d.fileName,
                 Path = d.pathOrContainerName,
-                Storage = _storageService.StorageName
+                Storage = _storageService.StorageName,
+                Products = new List<Product>() { product }
             }).ToList());
             await _productImageFileWriteRepository.SaveAsync();
 
-            //var datas = await _fileService.UploadAsync("resource/product-images", Request.Form.Files);
-            //await _productImageFileWriteRepository.AddRangeAsync(datas.Select(d => new ProductImageFile()
-            //{
-            //    FileName = d.fileName,
-            //    Path = d.path
-            //}).ToList());
-            //await _productImageFileWriteRepository.SaveAsync();
 
-            //await _fileWriteRepository.AddRangeAsync(datas.Select(d => new Domain.Entities.File()
-            //{
-            //    FileName = d.fileName,
-            //    Path = d.path
-            //}).ToList());
-            //await _fileWriteRepository.SaveAsync();
+            return Ok();
+        }
 
+        [HttpGet("[action]/{id}")]
+        public async Task<IActionResult> GetProductImage([FromRoute] string id)
+        {
+            var product = await _productReadRepository.Table.Include(p => p.ProductImageFiles).FirstOrDefaultAsync(p => p.Id == Guid.Parse(id));
+
+            var baseUrl = $"{Request.Scheme}://{Request.Host}";
+
+            return Ok(product.ProductImageFiles.Select(p => new
+            {
+                Path = $"{baseUrl}/{p.Path}",
+                p.FileName,
+                p.Id
+            }));
+        }
+
+        [HttpDelete("[action]/{id}")]
+        public async Task<IActionResult> DeleteProductImage([FromRoute] string id, [FromQuery] string imageId)
+        {
+            var product = await _productReadRepository.Table.Include(p => p.ProductImageFiles).FirstOrDefaultAsync(p => p.Id == Guid.Parse(id));
+
+            var productImageFile = product.ProductImageFiles.FirstOrDefault(p => p.Id == Guid.Parse(imageId));
+            product.ProductImageFiles.Remove(productImageFile);
+            await _productWriteRepository.SaveAsync();
             return Ok();
         }
     }
