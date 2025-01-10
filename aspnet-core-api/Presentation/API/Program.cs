@@ -6,12 +6,14 @@ using Infrastructure.Filters;
 using Infrastructure.Services.Storage.Azure;
 using Infrastructure.Services.Storage.Local;
 using Persistence;
+using Application;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddPersistenceServices();
 builder.Services.AddInfrastructureServices();
+builder.Services.AddApplicationServices();
 
 //builder.Services.AddStorage(StorageType.Local); // Alt satýrýn farklý bir kullanýmý
 builder.Services.AddStorage<LocalStorage>();
