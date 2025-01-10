@@ -9,6 +9,7 @@ using Application.Repositories.InvoiceFiles;
 using Application.Repositories.Orders;
 using Application.Repositories.ProductImageFiles;
 using Application.Repositories.Products;
+using Domain.Entities.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Persistence.Contexts;
@@ -26,6 +27,15 @@ namespace Persistence
         public static void AddPersistenceServices(this IServiceCollection services)
         {
             services.AddDbContext<ETicaretAPIDbContext>(options => options.UseNpgsql(Configuration.ConnectionString));
+
+            services.AddIdentity<AppUser, AppRole>(opts =>
+            {
+                opts.Password.RequireNonAlphanumeric = false;
+                opts.Password.RequireLowercase = false;
+                opts.Password.RequireUppercase = false;
+
+                opts.User.RequireUniqueEmail = true;
+            }).AddEntityFrameworkStores<ETicaretAPIDbContext>();
 
             services.AddScoped<ICustomerReadRepository, CustomerReadRepository>();
             services.AddScoped<ICustomerWriteRepository, CustomerWriteRepository>();

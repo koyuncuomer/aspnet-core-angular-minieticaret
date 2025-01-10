@@ -4,12 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Domain.Entities;
+using Domain.Entities.Identity;
 using Domain.Entities.Common;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Persistence.Contexts
 {
-    public class ETicaretAPIDbContext : DbContext
+    public class ETicaretAPIDbContext : IdentityDbContext<AppUser, AppRole, string>
     {
         public ETicaretAPIDbContext(DbContextOptions options) : base(options)
         {
