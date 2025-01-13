@@ -7,6 +7,7 @@ using Application.Features.Queries.Product.GetAllProducts;
 using Application.Features.Queries.Product.GetByIdProduct;
 using Application.Features.Queries.ProductImageFile.GetAllProductImages;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -14,6 +15,7 @@ namespace API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(AuthenticationSchemes = "Admin")]
     public class ProductsController : ControllerBase
     {
         readonly IMediator _mediator;
