@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Application.Abstractions.Services;
+using Application.Abstractions.Services.Authentications;
 using Application.Repositories.Customers;
 using Application.Repositories.Files;
 using Application.Repositories.InvoiceFiles;
@@ -19,6 +21,7 @@ using Persistence.Repositories.InvoiceFiles;
 using Persistence.Repositories.Orders;
 using Persistence.Repositories.ProductImageFiles;
 using Persistence.Repositories.Products;
+using Persistence.Services;
 
 namespace Persistence
 {
@@ -55,6 +58,10 @@ namespace Persistence
             services.AddScoped<IInvoiceFileReadRepository, InvoiceFileReadRepository>();
             services.AddScoped<IInvoiceFileWriteRepository, InvoiceFileWriteRepository>();
 
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IInternalAuthentication, AuthService>();
+            services.AddScoped<IExternalAuthentication, AuthService>();
 
         }
     }

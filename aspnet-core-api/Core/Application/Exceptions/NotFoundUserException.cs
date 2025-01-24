@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Application.Exceptions
 {
-    internal class NotFoundUserException : Exception
+    public class NotFoundUserException : Exception
     {
         public NotFoundUserException() : base("Authentication error: Invalid credentials.")
         {
