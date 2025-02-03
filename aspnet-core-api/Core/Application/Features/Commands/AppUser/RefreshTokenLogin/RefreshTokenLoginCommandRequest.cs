@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MediatR;
 
-namespace Application.DTOs
+namespace Application.Features.Commands.AppUser.RefreshTokenLogin
 {
-    public class TokenDto
+    public class RefreshTokenLoginCommandRequest : IRequest<RefreshTokenLoginCommandResponse>
     {
-        public string AccessToken { get; set; }
-        public DateTime Expiration { get; set; }
         public string RefreshToken { get; set; }
     }
 }

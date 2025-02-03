@@ -7,7 +7,6 @@ using Application.Abstractions.Services;
 using Application.DTOs.User;
 using Application.Exceptions;
 using Domain.Entities.Identity;
-using MediatR;
 using Microsoft.AspNetCore.Identity;
 
 namespace Persistence.Services
@@ -35,6 +34,19 @@ namespace Persistence.Services
                 return new() { Succeeded = true, Message = "User created succesfully." };
 
             throw new UserCreateFailedException(result.Errors.Select(e => e.Description));
+        }
+
+        public async Task UpdateRefreshToken(string refreshToken, AppUser user, DateTime accessTokenEndDate, int refreshTokenLifeTime)
+        {
+            if (user != null)
+            {
+                user.RefreshToken = refreshToken;
+                user.RefreshTokenEndDate = accessTokenEndDate.AddSeconds(refreshTokenLifeTime);
+                await _userManager.UpdateAsync(user);
+            }
+            else
+                throw new NotFoundUserException();
+
         }
     }
 }

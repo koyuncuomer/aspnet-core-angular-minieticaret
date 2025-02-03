@@ -10,5 +10,6 @@ namespace Application.Abstractions.Token
     public interface ITokenHandler
     {
         TokenDto CreateAccessToken(int seconds);
+        string CreateRefreshToken();
     }
 }
