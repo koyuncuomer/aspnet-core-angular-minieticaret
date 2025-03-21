@@ -32,7 +32,8 @@ namespace Application.Features.Queries.ProductImageFile.GetAllProductImages
             {
                 Path = $"{baseUrl}/{p.Path}",
                 FileName = p.FileName,
-                Id = p.Id
+                Id = p.Id,
+                Showcase = p.Showcase
             }).ToList();
         }
     }
